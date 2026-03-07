@@ -38,8 +38,18 @@ header {
     align-items: center;
 }
 
+footer {
+    background-color: #211103;
+    align-items: center;
+    color: white
+}
+
 .header-icon img {
+    size: 80%;
     border-radius: 25%;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding: 15px;
+}
+
+nav {
+    background-color: #2F4343;
 }
