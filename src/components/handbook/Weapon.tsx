@@ -14,8 +14,6 @@ const masteryProperty = weapon.properties.find((properties) => properties.proper
 
 
 export default function Weapon() {
-
-
   return (
     <div className="phb page" id="p3" data-index="2">
       <h1>Weapon</h1>
@@ -32,7 +30,7 @@ export default function Weapon() {
             <br />
             This weapon has the following mastery property. To use this property, you must have a feature that lets you use it.
             <br />
-            {/* mastery property stuff goes here */}
+            {masteryProperty?.property.name}
             <br />
             {/* will find a way to neatly display the grid later */}
             <Container>
