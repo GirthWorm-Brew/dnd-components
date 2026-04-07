@@ -11,7 +11,7 @@ import {
   MagicItem,
   Creature,
   Plane,
-  Race,
+  Species,
   Section,
   Spell,
   SpellList,
@@ -24,10 +24,19 @@ export default function App() {
     <MainLayout>
       <Row>
         <Col>
-          <Creature creatureKey="a5e-mm_aboleth" />
+          <Document id="srd-2024" />
         </Col>
         <Col>
-          <Armor armorKey="srd-2024_breastplate" />
+          <Condition id="charmed" />
+        </Col>
+        <Col>
+          <Feat id="srd-2024_archery" />
+        </Col>
+        <Col>
+          <Creature id="a5e-mm_aboleth" />
+        </Col>
+        <Col>
+          <Armor id="srd-2024_breastplate" />
         </Col>
         <Col>
           <Class />
