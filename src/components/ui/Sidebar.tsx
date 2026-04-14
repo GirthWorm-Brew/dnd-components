@@ -8,6 +8,7 @@ import {
 } from "react-bootstrap";
 import {
   armorList,
+  classesList,
   creaturesList,
   itemsList,
   spellsList,
@@ -21,6 +22,7 @@ const listFunctions = {
   items: itemsList,
   armor: armorList,
   weapons: weaponsList,
+  classes: classesList
 };
 
 type Category = keyof typeof listFunctions;
@@ -107,7 +109,7 @@ export default function Sidebar() {
               <DropdownMenu>
                 <DropdownItem eventKey="armor">Armor</DropdownItem>
                 <DropdownItem>Backgrounds</DropdownItem>
-                <DropdownItem>Classes</DropdownItem>
+                <DropdownItem eventKey="classes">Classes</DropdownItem>
                 <DropdownItem>Conditions</DropdownItem>
                 <DropdownItem>Documents</DropdownItem>
                 <DropdownItem>Feats</DropdownItem>
