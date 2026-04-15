@@ -27,9 +27,12 @@ function formatWeight(rawWeight : string): string {
 
     let convertedWeight = ``;
 
+    //There is absolutely a cleaner way of doing this
+    //This also assumes that you never have anything weighing in 3/4 lbs
+
     if (wholePounds > 0) convertedWeight += `${wholePounds} lbs `;
-    if (halfPounds > 0) convertedWeight += `${halfPounds}/2 lbs `;
-    if (quarterPounds > 0) convertedWeight += `${quarterPounds}/4 lbs `;
+    if (halfPounds > 0) convertedWeight += `1/2 lbs `;
+    if (quarterPounds > 0) convertedWeight += `1/4 lbs `;
 
     return convertedWeight;
 }

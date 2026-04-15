@@ -2,6 +2,7 @@ import { useEffect, useState} from "react";
 import { itemsRetrieve, weaponsRetrieve } from "../../modules/open5e/sdk.gen";
 import { Item, Weapon } from "../../modules/open5e/types.gen"
 import { useParams } from "react-router";
+import { formatCost, formatWeight } from "./itemFormatter";
 
 
 
@@ -96,18 +97,18 @@ export default function WeaponPage() {
                 <thead>
                   <tr>
                     <th><strong>Name</strong></th>
-                    {/* <th><strong>Cost</strong></th> */}
+                    <th><strong>Cost</strong></th>
                     <th><strong>Damage</strong></th>
-                    {/* <th><strong>Weight</strong></th> */}
+                    <th><strong>Weight</strong></th>
                     <th><strong>Properties</strong></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>{item.name}</td>
-                    {/* <td>{item.cost}</td> */}
+                    <td>{formatCost(item.cost ?? "0")}</td>
                     <td>{item.weapon.damage_dice} {item.weapon.damage_type.name}</td>
-                    {/* <td>{item.weight}</td> */}
+                    <td>{formatWeight(item.weight ?? "0")}</td>
                     <td>{propertyNames}</td>
                   </tr>
                 </tbody>
