@@ -1,5 +1,4 @@
 import { Container } from "react-bootstrap";
-import classJson from "../../../data/classes/bard.json";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
@@ -11,8 +10,6 @@ import "./Page.css";
 import { useParams } from "react-router";
 import { CharacterClass } from "../../modules/open5e/types.gen";
 import { classesRetrieve } from "../../modules/open5e/sdk.gen";
-
-const char = classJson;
 
 async function parseMarkdown(markdown: string) {
   const file = await unified()
@@ -44,8 +41,9 @@ export default function ClassPage() {
 
     async function parseAll() {
       const [table, desc] = await Promise.all([
-        parseMarkdown(char.table ?? ""),
-        parseMarkdown(char.desc ?? ""),
+        // table parse commented out bc it totally breaks the page
+        // parseMarkdown(charClass?.table ?? ""),
+        parseMarkdown(charClass?.desc ?? ""),
       ]);
 
       if (!cancelled) {
@@ -57,12 +55,6 @@ export default function ClassPage() {
     }
     parseAll();
 
-    return () => {
-      cancelled = true;
-    };
-  }, [stub]);
-
-  useEffect(() => {
     async function load() {
       const resClass = await classesRetrieve({
         path: {
@@ -72,8 +64,12 @@ export default function ClassPage() {
       setClass(resClass.data as CharacterClass);
     }
     load();
+
+    return () => {
+      cancelled = true;
+    };
   }, [stub]);
-  console.log({ charClass });
+
   if (!charClass) {
     return (
       <div>
@@ -88,21 +84,22 @@ export default function ClassPage() {
           <h2>{charClass.name}</h2>
           <div
             className="classDescription"
-            // dangerouslySetInnerHTML={{ __html: content.desc }}
+            dangerouslySetInnerHTML={{ __html: content.desc }}
           >
             {charClass.desc}
           </div>
           <div
             className="wide classTable"
-            // dangerouslySetInnerHTML={{ __html: content.table }}
+            dangerouslySetInnerHTML={{ __html: content.table }}
           />
           {charClass.name}
         </div>
-        <a className="artist" href={char.document__url}>
+        {/* Also commented out because it breaks the page */}
+        {/* <a className="artist" href={char.document__url}>
           {char.document__slug}
-        </a>
+        </a> */}
         <div className="footnote">
-          <p className="">{char.document__title}</p>
+          <p className="">{charClass.document.name}</p>
         </div>
         <div className="pageNumber auto"></div>
       </Container>
