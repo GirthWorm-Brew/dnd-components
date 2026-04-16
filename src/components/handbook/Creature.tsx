@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useHandbookData } from "./useHandbookData";
 import { creaturesRetrieve } from "../../modules/open5e/sdk.gen";
 import {
   Creature,
@@ -36,198 +36,195 @@ function SpeedBlock({ speed }: { speed: SpeedAll }) {
 }
 
 export default function CreaturePage() {
-  let { stub } = useParams();
-  const [creature, setCreature] = useState<Creature | null>(null);
+  let { stub } = useParams<{ stub: string }>();
+  const { data: creature, loading } = useHandbookData(
+    stub,
+    creaturesRetrieve,
+    (data): data is Creature => (data as Creature)?.name !== undefined,
+  );
 
-  useEffect(() => {
-    async function load() {
-      const res = await creaturesRetrieve({
-        path: {
-          key: stub || "",
-        },
-      });
-      console.log(res.data);
-      setCreature(res.data as Creature);
-    }
-    load();
-  }, [stub]);
-
-  if (!creature) {
+  if (loading) {
     return (
       <div>
         <p>...loading</p>
       </div>
     );
-  } else {
-    return (
-      <Container className="phb page">
-        <div id="p1" data-index="0">
-          <h1>creature</h1>
-          <div className="columnWrapper">
-            <div
-              className="watercolor9"
-              style={{
-                opacity: 0.24,
-                top: -750,
-                left: -500,
-              }}
-            ></div>
-            {creature.illustration != null ? (
-              <img
-                src={creature.illustration.url}
-                alt={creature.illustration.alt_text}
-              />
-            ) : null}
-            <div className="block monster frame wide">
-              <h2 id="creature">{creature.name}</h2>
-              <p>
-                <em>
-                  {creature.size.name} {creature.type.name} {creature.category}
-                  <span className="inline-block bonus">
-                    {creature.alignment}
-                  </span>
-                </em>
-              </p>
-              <hr />
-              <dl>
-                <dt>
-                  <strong>armor class</strong>
-                </dt>
-                <dd>
-                  {creature.armor_class}
-                  <br />
-                </dd>
-                <dt>
-                  <strong>hit points</strong>
-                </dt>
-                <dd>
-                  {creature.hit_points}
-                  <br />
-                </dd>
-                <SpeedBlock speed={creature.speed_all} />
-              </dl>
-              <hr />
-              <table>
-                <thead>
-                  <tr>
-                    <th align="center">str</th>
-                    <th align="center">dex</th>
-                    <th align="center">con</th>
-                    <th align="center">int</th>
-                    <th align="center">wis</th>
-                    <th align="center">cha</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td align="center">{creature.modifiers.strength}</td>
-                    <td align="center">{creature.modifiers.dexterity}</td>
-                    <td align="center">{creature.modifiers.constitution}</td>
-                    <td align="center">{creature.modifiers.intelligence}</td>
-                    <td align="center">{creature.modifiers.wisdom}</td>
-                    <td align="center">{creature.modifiers.charisma}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <hr />
+  }
 
-              {creature.actions.some(
-                (actionType: CreatureAction): boolean =>
-                  actionType.action_type == "LEGENDARY_ACTION",
-              ) ? (
-                <h3 id="actions">Legendary Actions</h3>
-              ) : null}
-              {creature.actions
-                .filter(
-                  (action: CreatureAction): boolean =>
-                    action.action_type == "LEGENDARY_ACTION",
-                )
-                .map((action) => (
-                  <dl>
-                    <dt>
-                      <strong>{action.name}</strong>
-                    </dt>
-                    <dd>{action.desc}</dd>
-                    <dd>{action.legendary_action_cost}</dd>
-                    {/* <dd>{action.usage_limits}</dd> */}
-                    {/* I commented this out because I can't find a usage_limits property anywhere in the data files */}
-                  </dl>
-                ))}
-              {creature.actions.some(
-                (actionType) => actionType.action_type == "LAIR_ACTION",
-              ) ? (
-                <h3 id="actions">Lair Actions</h3>
-              ) : null}
-              {creature.actions
-                .filter((action) => action.action_type == "LAIR_ACTION")
-                .map((action) => (
-                  <dl>
-                    <dt>
-                      <strong>{action.name}</strong>
-                    </dt>
-                    <dd>{action.desc}</dd>
-                    <dd>{action.legendary_action_cost}</dd>
-                  </dl>
-                ))}
-              {creature.actions.some(
-                (actionType) => actionType.action_type == "REACTION",
-              ) ? (
-                <h3 id="actions">Reactions</h3>
-              ) : null}
-              {creature.actions
-                .filter((action) => action.action_type == "REACTION")
-                .map((action) => (
-                  <dl>
-                    <dt>
-                      <strong>{action.name}</strong>
-                    </dt>
-                    <dd>{action.desc}</dd>
-                    <dd>{action.legendary_action_cost}</dd>
-                  </dl>
-                ))}
-              {creature.actions.some(
-                (actionType) => actionType.action_type == "ACTION",
-              ) ? (
-                <h3 id="actions">Actions</h3>
-              ) : null}
-              {creature.actions
-                .filter((action) => action.action_type == "ACTION")
-                .map((action) => (
-                  <dl>
-                    <dt>
-                      <strong>{action.name}</strong>
-                    </dt>
-                    <dd>{action.desc}</dd>
-                    <dd>{action.legendary_action_cost}</dd>
-                  </dl>
-                ))}
-              {creature.actions.some(
-                (actionType) => actionType.action_type == "BONUS_ACTION",
-              ) ? (
-                <h3 id="actions">Bonus Actions</h3>
-              ) : null}
-              {creature.actions
-                .filter((action) => action.action_type == "BONUS_ACTION")
-                .map((action) => (
-                  <dl>
-                    <dt>
-                      <strong>{action.name}</strong>
-                    </dt>
-                    <dd>{action.desc}</dd>
-                    <dd>{action.legendary_action_cost}</dd>
-                  </dl>
-                ))}
-            </div>
-            <a className="artist" href={creature.document.permalink}>
-              {creature.document.publisher.name}
-            </a>
-          </div>
-        </div>
-        <div className="footnote">
-          <p className="">{creature.document.display_name}</p>
-        </div>
-        <div className="pageNumber auto"></div>
-      </Container>
+  if (!creature) {
+    return (
+      <div>
+        <p>Creature not found</p>
+      </div>
     );
   }
+
+  return (
+    <Container className="phb page">
+      <div id="p1" data-index="0">
+        <h1>creature</h1>
+        <div className="columnWrapper">
+          <div
+            className="watercolor9"
+            style={{
+              opacity: 0.24,
+              top: -750,
+              left: -500,
+            }}
+          ></div>
+          {creature.illustration != null ? (
+            <img
+              src={creature.illustration.url}
+              alt={creature.illustration.alt_text}
+            />
+          ) : null}
+          <div className="block monster frame wide">
+            <h2 id="creature">{creature.name}</h2>
+            <p>
+              <em>
+                {creature.size.name} {creature.type.name} {creature.category}
+                <span className="inline-block bonus">{creature.alignment}</span>
+              </em>
+            </p>
+            <hr />
+            <dl>
+              <dt>
+                <strong>armor class</strong>
+              </dt>
+              <dd>
+                {creature.armor_class}
+                <br />
+              </dd>
+              <dt>
+                <strong>hit points</strong>
+              </dt>
+              <dd>
+                {creature.hit_points}
+                <br />
+              </dd>
+              <SpeedBlock speed={creature.speed_all} />
+            </dl>
+            <hr />
+            <table>
+              <thead>
+                <tr>
+                  <th align="center">str</th>
+                  <th align="center">dex</th>
+                  <th align="center">con</th>
+                  <th align="center">int</th>
+                  <th align="center">wis</th>
+                  <th align="center">cha</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td align="center">{creature.modifiers.strength}</td>
+                  <td align="center">{creature.modifiers.dexterity}</td>
+                  <td align="center">{creature.modifiers.constitution}</td>
+                  <td align="center">{creature.modifiers.intelligence}</td>
+                  <td align="center">{creature.modifiers.wisdom}</td>
+                  <td align="center">{creature.modifiers.charisma}</td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+
+            {creature.actions.some(
+              (actionType: CreatureAction): boolean =>
+                actionType.action_type == "LEGENDARY_ACTION",
+            ) ? (
+              <h3 id="actions">Legendary Actions</h3>
+            ) : null}
+            {creature.actions
+              .filter(
+                (action: CreatureAction): boolean =>
+                  action.action_type == "LEGENDARY_ACTION",
+              )
+              .map((action) => (
+                <dl>
+                  <dt>
+                    <strong>{action.name}</strong>
+                  </dt>
+                  <dd>{action.desc}</dd>
+                  <dd>{action.legendary_action_cost}</dd>
+                  {/* <dd>{action.usage_limits}</dd> */}
+                  {/* I commented this out because I can't find a usage_limits property anywhere in the data files */}
+                </dl>
+              ))}
+            {creature.actions.some(
+              (actionType) => actionType.action_type == "LAIR_ACTION",
+            ) ? (
+              <h3 id="actions">Lair Actions</h3>
+            ) : null}
+            {creature.actions
+              .filter((action) => action.action_type == "LAIR_ACTION")
+              .map((action) => (
+                <dl>
+                  <dt>
+                    <strong>{action.name}</strong>
+                  </dt>
+                  <dd>{action.desc}</dd>
+                  <dd>{action.legendary_action_cost}</dd>
+                </dl>
+              ))}
+            {creature.actions.some(
+              (actionType) => actionType.action_type == "REACTION",
+            ) ? (
+              <h3 id="actions">Reactions</h3>
+            ) : null}
+            {creature.actions
+              .filter((action) => action.action_type == "REACTION")
+              .map((action) => (
+                <dl>
+                  <dt>
+                    <strong>{action.name}</strong>
+                  </dt>
+                  <dd>{action.desc}</dd>
+                  <dd>{action.legendary_action_cost}</dd>
+                </dl>
+              ))}
+            {creature.actions.some(
+              (actionType) => actionType.action_type == "ACTION",
+            ) ? (
+              <h3 id="actions">Actions</h3>
+            ) : null}
+            {creature.actions
+              .filter((action) => action.action_type == "ACTION")
+              .map((action) => (
+                <dl>
+                  <dt>
+                    <strong>{action.name}</strong>
+                  </dt>
+                  <dd>{action.desc}</dd>
+                  <dd>{action.legendary_action_cost}</dd>
+                </dl>
+              ))}
+            {creature.actions.some(
+              (actionType) => actionType.action_type == "BONUS_ACTION",
+            ) ? (
+              <h3 id="actions">Bonus Actions</h3>
+            ) : null}
+            {creature.actions
+              .filter((action) => action.action_type == "BONUS_ACTION")
+              .map((action) => (
+                <dl>
+                  <dt>
+                    <strong>{action.name}</strong>
+                  </dt>
+                  <dd>{action.desc}</dd>
+                  <dd>{action.legendary_action_cost}</dd>
+                </dl>
+              ))}
+          </div>
+          <a className="artist" href={creature.document.permalink}>
+            {creature.document.publisher.name}
+          </a>
+        </div>
+      </div>
+      <div className="footnote">
+        <p className="">{creature.document.display_name}</p>
+      </div>
+      <div className="pageNumber auto"></div>
+    </Container>
+  );
 }

@@ -1,35 +1,34 @@
 import { Container } from "react-bootstrap";
+import { useHandbookData } from "./useHandbookData";
 import { Species } from "../../modules/open5e/types.gen";
 import { speciesRetrieve } from "../../modules/open5e/sdk.gen";
-import { useState, useEffect } from "react";
 
 export default function Race({ id }: { id: string }) {
-  const [feat, setSpecies] = useState<Species | null>(null);
+  const { data: species, loading } = useHandbookData(
+    id,
+    speciesRetrieve,
+    (data): data is Species => (data as Species)?.name !== undefined,
+  );
 
-  useEffect(() => {
-    async function load() {
-      const res = await speciesRetrieve({
-        path: {
-          key: id,
-        },
-      });
-      console.log(res.response);
-      setSpecies(res.data as Species);
-    }
-    load();
-  }, []);
-
-  if (!feat) {
+  if (loading) {
     return (
       <div>
         <p>...loading</p>
       </div>
     );
-  } else {
+  }
+
+  if (!species) {
     return (
-      <Container>
-        <main className="page tocDepthH3" id="p1" data-index="0"></main>
-      </Container>
+      <div>
+        <p>Species not found</p>
+      </div>
     );
   }
+
+  return (
+    <Container>
+      <main className="page tocDepthH3" id="p1" data-index="0"></main>
+    </Container>
+  );
 }
