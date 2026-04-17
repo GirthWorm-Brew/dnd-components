@@ -9,23 +9,33 @@ import {
 } from "react-bootstrap";
 import {
   armorList,
+  backgroundsList,
   classesList,
   conditionsList,
   creaturesList,
+  documentsList,
+  featsList,
   itemsList,
+  magicitemsList,
+  speciesList,
   spellsList,
   weaponsList,
 } from "../../modules/open5e/sdk.gen";
 import { Link } from "react-router";
 
 const listFunctions = {
-  creatures: creaturesList,
-  spells: spellsList,
-  items: itemsList,
   armor: armorList,
-  weapons: weaponsList,
+  backgrounds: backgroundsList,
+  creatures: creaturesList,
   classes: classesList,
   conditions: conditionsList,
+  documents: documentsList,
+  feats: featsList,
+  magicItems: magicitemsList,
+  species: speciesList,
+  spells: spellsList,
+  items: itemsList,
+  weapons: weaponsList,
 };
 
 type Category = keyof typeof listFunctions;
@@ -120,18 +130,15 @@ export default function Sidebar() {
             >
               <DropdownMenu>
                 <DropdownItem eventKey="armor">Armor</DropdownItem>
-                <DropdownItem eventKey="Backgrounds">Backgrounds</DropdownItem>
+                <DropdownItem eventKey="backgrounds">Backgrounds</DropdownItem>
                 <DropdownItem eventKey="classes">Classes</DropdownItem>
                 <DropdownItem eventKey="subclasses">Subclasses</DropdownItem>
                 <DropdownItem eventKey="conditions">Conditions</DropdownItem>
-                <DropdownItem>Documents</DropdownItem>
-                <DropdownItem>Feats</DropdownItem>
-                <DropdownItem>Magic Items</DropdownItem>
+                <DropdownItem eventKey="documents">Documents</DropdownItem>
+                <DropdownItem eventKey="feats">Feats</DropdownItem>
+                <DropdownItem eventKey="magicItems">Magic Items</DropdownItem>
                 <DropdownItem eventKey="creatures">Creatures</DropdownItem>
-                <DropdownItem>Planes</DropdownItem>
-                <DropdownItem>Races</DropdownItem>
-                <DropdownItem>Sections</DropdownItem>
-                <DropdownItem>Spell Lists</DropdownItem>
+                <DropdownItem eventKey="species">Species</DropdownItem>
                 <DropdownItem eventKey="spells">Spells</DropdownItem>
                 <DropdownItem eventKey="weapons">Weapons</DropdownItem>
               </DropdownMenu>
