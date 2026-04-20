@@ -22,39 +22,22 @@ import {
   weaponsList,
 } from "../../modules/open5e/sdk.gen";
 import { Link } from "react-router";
-
-const listFunctions = {
-  armor: armorList,
-  backgrounds: backgroundsList,
-  creatures: creaturesList,
-  classes: classesList,
-  conditions: conditionsList,
-  documents: documentsList,
-  feats: featsList,
-  magicItems: magicitemsList,
-  species: speciesList,
-  spells: spellsList,
-  items: itemsList,
-  weapons: weaponsList,
-};
-
-type Category = keyof typeof listFunctions;
+import {
+  categories,
+  getCategory,
+  warmAll,
+  type Category,
+} from "../../modules/open5e-cache";
+import { categoryConfig } from "../../modules/open5e-cache/config";
 
 interface ListableItem {
   key: string;
   name: string;
 }
 
-type AnyPaginatedList = {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: ListableItem[];
-};
-
 export default function Sidebar() {
-  const [category, setCategory] = useState("creatures");
-  const [data, setData] = useState<AnyPaginatedList | null>(null);
+  const [category, setCategory] = useState<Category>("creatures");
+  const [items, setItems] = useState<ListableItem[] | null>(null);
   let isSubClass = false;
 
   if (category === "classes") {
@@ -63,22 +46,20 @@ export default function Sidebar() {
     isSubClass = true;
   }
 
-  const handleSelect = async (category: string) => {
-    const result = await listFunctions[category as Category]({
-      query: {
-        page: 1,
-        document__key__in: ["srd-2014", "srd-2024"],
-        is_subclass: isSubClass,
-      },
-    });
-    setData(result.data as AnyPaginatedList);
+  const handleSelect = async (category: Category) => {
+    let result = await getCategory(category);
+    if (!result) {
+      await warmAll();
+      result = await getCategory(category);
+    }
+    setItems((result?.entries ?? []) as ListableItem[]);
   };
 
   useEffect(() => {
     handleSelect(category);
   }, [category]);
 
-  if (!data) {
+  if (!items) {
     return (
       <div>
         <p>...loading</p>
@@ -129,64 +110,32 @@ export default function Sidebar() {
               }}
             >
               <DropdownMenu>
-                <DropdownItem eventKey="armor">Armor</DropdownItem>
-                <DropdownItem eventKey="backgrounds">Backgrounds</DropdownItem>
-                <DropdownItem eventKey="classes">Classes</DropdownItem>
-                <DropdownItem eventKey="subclasses">Subclasses</DropdownItem>
-                <DropdownItem eventKey="conditions">Conditions</DropdownItem>
-                <DropdownItem eventKey="documents">Documents</DropdownItem>
-                <DropdownItem eventKey="feats">Feats</DropdownItem>
-                <DropdownItem eventKey="magicItems">Magic Items</DropdownItem>
-                <DropdownItem eventKey="creatures">Creatures</DropdownItem>
-                <DropdownItem eventKey="species">Species</DropdownItem>
-                <DropdownItem eventKey="spells">Spells</DropdownItem>
-                <DropdownItem eventKey="weapons">Weapons</DropdownItem>
+                {categories.map(({ key, label }) => (
+                  <DropdownItem eventKey={key}>{label}</DropdownItem>
+                ))}
               </DropdownMenu>
             </DropdownButton>
-
-            {/* <div className="library-nav"> */}
-            {/*   <label htmlFor="lib-mon">Monsters</label> */}
-            {/*   <label htmlFor="lib-spell">Spells</label> */}
-            {/*   <label htmlFor="lib-item">Items</label> */}
-            {/*   <label htmlFor="lib-char">Chars</label> */}
-            {/* </div> */}
-
             <div className="library-content">
               <div className="content-pane pane-monsters">
                 <ul className="list">
-                  {data?.results.map((creature) => (
-                    <li>
-                      <Link to={`/encounter/${category}/` + creature.key}>
+                  {items.map((item) => (
+                    <li key={item.key}>
+                      <Link to={`/encounter/${category}/${item.key}`}>
                         <Button variant="outline-info" size="sm">
-                          {creature.name}
+                          {item.name}
                         </Button>
                       </Link>
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="content-pane pane-spells">
-                <h4>Spells</h4>
-                <ul className="list">
-                  <li>Fireball</li>
-                  <li>Magic Missile</li>
-                </ul>
-              </div>
-              <div className="content-pane pane-items">
-                <h4>Items</h4>
-                <ul className="list">
-                  <li>Vorpal Sword</li>
-                  <li>Bag of Holding</li>
-                </ul>
-              </div>
-              <div className="content-pane pane-chars">
-                <h4>Characters</h4>
-                <ul className="list">
-                  <li>Gandalf</li>
-                  <li>Legolas</li>
-                </ul>
-              </div>
             </div>
+            {/* <div className="library-nav"> */}
+            {/*   <label htmlFor="lib-mon">Monsters</label> */}
+            {/*   <label htmlFor="lib-spell">Spells</label> */}
+            {/*   <label htmlFor="lib-item">Items</label> */}
+            {/*   <label htmlFor="lib-char">Chars</label> */}
+            {/* </div> */}
           </aside>
         </Col>
       </>
