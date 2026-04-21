@@ -119,6 +119,7 @@ export default function WeaponPage() {
               <tbody>
                 <tr>
                   <td>{item.name}</td>
+                  {/* the raw cost and weight data is ugly, uses itemFormatter.ts to fix that */}
                   <td>{formatCost(item.cost ?? "0")}</td>
                   <td>
                     {item.weapon.damage_dice} {item.weapon.damage_type.name}
