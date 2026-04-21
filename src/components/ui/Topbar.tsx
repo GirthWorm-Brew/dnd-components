@@ -1,8 +1,27 @@
 import "../../styles/Nick.css";
-export default function Topbar() {
+import { Button } from "react-bootstrap";
+
+type TopbarProps = {
+  libraryOpen: boolean;
+  onToggleLibrary: () => void;
+};
+
+export default function Topbar({ libraryOpen, onToggleLibrary }: TopbarProps) {
   return (
     <header className="main-header">
-      <div className="logo">Logo</div>
+      <div className="header-left">
+        <Button
+          variant="dark"
+          size="sm"
+          className="library-toggle"
+          onClick={onToggleLibrary}
+          aria-expanded={libraryOpen}
+          aria-controls="sidebar-left"
+        >
+          ☰ Library
+        </Button>
+        <div className="logo">Logo</div>
+      </div>
       <nav className="nav-tabs">
         <a href="Landing.html" className="tab">
           Home
