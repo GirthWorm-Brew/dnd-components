@@ -177,7 +177,7 @@ function EncounterTracker() {
 
   return (
     <div className="encountertracker">
-      <div className="sidebar">
+      <div className="tracker-sidebar">
         <h3>Actions</h3>
 
         <br />

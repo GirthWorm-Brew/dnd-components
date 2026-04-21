@@ -12,6 +12,7 @@ import {
   Spell,
 } from "./components/handbook";
 import EncounterTracker from "./components/encounterTracker/EncounterTracker";
+import EncounterGenDemo from "./components/encounterGen/EncounterGenDemo";
 
 export default function Router() {
   return (
@@ -31,6 +32,7 @@ export default function Router() {
         <Route path="weapons/:stub" element={<Weapon />} />
         <Route path="subclasses/:stub" element={<Class />} />
         <Route path="track" element={<EncounterTracker />} />
+        <Route path="generate" element={<EncounterGenDemo />} />
       </Route>
     </Routes>
   );

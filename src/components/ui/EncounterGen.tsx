@@ -1,1 +1,3 @@
-import { EncounterGen } from "../../modules/encounter-gen";
+import { generateEncounter } from "../../modules/encounter-gen";
+
+void generateEncounter;
