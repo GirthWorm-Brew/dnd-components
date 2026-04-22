@@ -1,7 +1,8 @@
-import { Container } from "react-bootstrap";
 import { magicitemsRetrieve } from "../../modules/open5e/sdk.gen";
-import { MagicitemsRetrieveResponse } from "../../modules/open5e/types.gen";
-import { useState, useEffect } from "react";
+import { Item } from "../../modules/open5e/types.gen";
+import { useParams } from "react-router";
+import { useHandbookData } from "./useHandbookData";
+import HandbookPage from "./HandbookPage";
 
 // { "slug": string,
 //   "name": string,
@@ -14,35 +15,49 @@ import { useState, useEffect } from "react";
 //   "document__url": string
 // }
 
-export default function MagicItem({ id }: { id: string }) {
-  const [magicItem, setMagicItem] = useState<MagicitemsRetrieveResponse | null>(
-    null,
+export default function magicItem() {
+  let { stub } = useParams<{ stub: string }>();
+  const { data: magicItem, loading } = useHandbookData(
+    stub,
+    magicitemsRetrieve,
+    (data): data is Item => (data as Item)?.name !== undefined,
   );
 
-  useEffect(() => {
-    async function load() {
-      const res = await magicitemsRetrieve({
-        path: {
-          key: id,
-        },
-      });
-      console.log(res.response);
-      setMagicItem(res.data as MagicitemsRetrieveResponse);
-    }
-    load();
-  }, []);
-
-  if (!magicItem) {
+  if (loading) {
     return (
       <div>
         <p>...loading</p>
       </div>
     );
-  } else {
+  }
+
+  if (!magicItem) {
     return (
-      <Container fluid className="phb page">
-        <main className=""></main>
-      </Container>
+      <div>
+        <p>Condtion not found</p>
+      </div>
     );
   }
+  return (
+    <HandbookPage>
+      <main className="">
+        <h1>Magic Item</h1>
+        <div className="columnWrapper">
+          <h2 id="magicItem">{magicItem.name}</h2>
+          <p className="wide">
+            <em>
+              {magicItem.rarity.name} {magicItem.category.name}
+            </em>
+          </p>
+        </div>
+        <a className="artist" href={magicItem.document.permalink}>
+          {magicItem.document.publisher.name}
+        </a>
+        <div className="footnote">
+          <p className="">{magicItem.document.name}</p>
+        </div>
+        <div className="pageNumber auto"></div>
+      </main>
+    </HandbookPage>
+  );
 }

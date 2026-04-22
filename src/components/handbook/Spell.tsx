@@ -1,13 +1,36 @@
-import { Container } from "react-bootstrap";
-import spellJson from "../../../data/spells/srd_cloudkill.json";
-import "../../../themes/V3/5ePHB/style.css";
-import "../../../themes/V3/Blank/style.css";
-import "../../../themes/V3/phb.standalone.css";
+import { spellsRetrieve } from "../../modules/open5e/sdk.gen";
+import { Spell } from "../../modules/open5e/types.gen";
+import { useParams } from "react-router";
+import { useHandbookData } from "./useHandbookData";
+import HandbookPage from "./HandbookPage";
 
-const spell = spellJson;
-export default function Spell() {
+export default function SpellPage() {
+  let { stub } = useParams();
+
+  const { data: spell, loading } = useHandbookData(
+    stub,
+    spellsRetrieve,
+    (data): data is Spell => (data as Spell)?.name !== undefined
+  );
+
+  if (loading) {
+    return (
+      <div>
+        <p>...loading</p>
+      </div>
+    );
+  }
+
+  if (!spell) {
+    return (
+      <div>
+        <p>Not found</p>
+      </div>
+    );
+  }
+
   return (
-    <Container className="phb page auto">
+    <HandbookPage modifier="auto">
       <main className="" id="p1" data-index="0">
         <h1>Spell</h1>
         <div className="columnWrapper">
@@ -32,7 +55,7 @@ export default function Spell() {
             </li>
             <li>
               <strong>Duration: </strong>
-              {spell.duration != "" ? spell.duration : ""}
+              {spell.duration}
             </li>
           </ul>
           <p className="wide">{spell.desc}</p>
@@ -41,14 +64,22 @@ export default function Spell() {
               <>
                 <dt>{option.type}</dt>
                 <dd>
-                  {option.damage_roll != null ? <li>Damage Roll: {option.damage_roll}</li> : null}
+                  {option.damage_roll != null ? (
+                    <li>Damage Roll: {option.damage_roll}</li>
+                  ) : null}
                   {option.desc != null ? <li>{option.desc}</li> : null}
                   {option.target_count != null ? (
                     <li>Target Count: {option.target_count}</li>
                   ) : null}
-                  {option.duration != null ? <li>Duration: {option.duration}</li> : null}
-                  {option.range != null ? <li>Range: {option.range}</li> : null}
-                  {option.shape_size != null ? <li>Shape/Size:{option.shape_size}</li> : null}
+                  {option.duration != null ? (
+                    <li>Duration: {option.duration}</li>
+                  ) : null}
+                  {option.range != null ? (
+                    <li>Range: {option.range}</li>
+                  ) : null}
+                  {option.shape_size != null ? (
+                    <li>Shape/Size:{option.shape_size}</li>
+                  ) : null}
                   {option.concentration != null ? (
                     <li>Concentration: {option.concentration}</li>
                   ) : null}
@@ -66,6 +97,6 @@ export default function Spell() {
         </div>
         <div className="pageNumber auto"></div>
       </main>
-    </Container>
+    </HandbookPage>
   );
 }

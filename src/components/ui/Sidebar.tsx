@@ -1,84 +1,97 @@
-import { Col, Dropdown, DropdownButton, DropdownItem, DropdownMenu } from "react-bootstrap";
+import "../../styles/Nick.css";
+import { useEffect, useState } from "react";
+import {
+  DropdownButton,
+  DropdownItem,
+  ListGroup,
+  Spinner,
+} from "react-bootstrap";
+import { Link } from "react-router";
+import {
+  categories,
+  getCategory,
+  warmAll,
+  type Category,
+} from "../../modules/open5e-cache";
 
-const sidebarItems: Array<string> = ["Item1, Item2, Item3, Item4, Item5, Item6, Item7, Item8"];
-const sidebarCharacters: Array<string> = [
-  "Character, Character, Character, Character, Character, Character, Character, Character",
-];
-const sidebarMonsters: Array<string> = [
-  "Monster, Monster, Monster, Monster, Monster, Monster, Monster, Monster",
-];
+interface ListableItem {
+  key: string;
+  name: string;
+}
 
-export default function Sidebar() {
+type SidebarProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const [category, setCategory] = useState<Category>("creatures");
+  const [items, setItems] = useState<ListableItem[] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      let result = await getCategory(category);
+      if (!result) {
+        await warmAll();
+        result = await getCategory(category);
+      }
+      if (!cancelled) {
+        setItems((result?.entries ?? []) as ListableItem[]);
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [category]);
+
+  const currentLabel =
+    categories.find((c) => c.key === category)?.label ?? category;
+
   return (
-    <>
-      <Col>
-        <input type="checkbox" id="toggle-left" className="toggle-hidden" />
-        <label htmlFor="toggle-left" className="side-tab left-tab">
-          Library ◀
-        </label>
-        <aside className="sidebar sidebar-left">
-          <input type="radio" name="lib-tab" id="lib-mon" className="lib-state" checked />
-          <input type="radio" name="lib-tab" id="lib-spell" className="lib-state" />
-          <input type="radio" name="lib-tab" id="lib-item" className="lib-state" />
-          <input type="radio" name="lib-tab" id="lib-char" className="lib-state" />
-          <DropdownButton id="sidebar-dropdown-selection" title="Category">
-            <DropdownMenu>
-              <DropdownItem>armor</DropdownItem>
-              <DropdownItem>Backgrounds</DropdownItem>
-              <DropdownItem>Classes</DropdownItem>
-              <DropdownItem>Conditions</DropdownItem>
-              <DropdownItem>Documents</DropdownItem>
-              <DropdownItem>Feats</DropdownItem>
-              <DropdownItem>Magic Items</DropdownItem>
-              <DropdownItem>Monsters</DropdownItem>
-              <DropdownItem>Planes</DropdownItem>
-              <DropdownItem>Races</DropdownItem>
-              <DropdownItem>Sections</DropdownItem>
-              <DropdownItem>Spell Lists</DropdownItem>
-              <DropdownItem>Spells</DropdownItem>
-              <DropdownItem>Weapons</DropdownItem>
-            </DropdownMenu>
-          </DropdownButton>
+    <aside
+      id="sidebar-left"
+      className={`sidebar sidebar-left${isOpen ? " open" : ""}`}
+      aria-hidden={!isOpen}
+    >
+      <DropdownButton
+        id="sidebar-dropdown-selection"
+        title={currentLabel}
+        onSelect={(key) => {
+          if (key) setCategory(key as Category);
+        }}
+      >
+        {categories.map(({ key, label }) => (
+          <DropdownItem key={key} eventKey={key}>
+            {label}
+          </DropdownItem>
+        ))}
+      </DropdownButton>
 
-          {/* <div className="library-nav"> */}
-          {/*   <label htmlFor="lib-mon">Monsters</label> */}
-          {/*   <label htmlFor="lib-spell">Spells</label> */}
-          {/*   <label htmlFor="lib-item">Items</label> */}
-          {/*   <label htmlFor="lib-char">Chars</label> */}
-          {/* </div> */}
-
-          <div className="library-content">
-            <div className="content-pane pane-monsters">
-              <h4>Monsters</h4>
-              <ul className="list">
-                <li>Ancient Dragon</li>
-                <li>Beholder</li>
-              </ul>
-            </div>
-            <div className="content-pane pane-spells">
-              <h4>Spells</h4>
-              <ul className="list">
-                <li>Fireball</li>
-                <li>Magic Missile</li>
-              </ul>
-            </div>
-            <div className="content-pane pane-items">
-              <h4>Items</h4>
-              <ul className="list">
-                <li>Vorpal Sword</li>
-                <li>Bag of Holding</li>
-              </ul>
-            </div>
-            <div className="content-pane pane-chars">
-              <h4>Characters</h4>
-              <ul className="list">
-                <li>Gandalf</li>
-                <li>Legolas</li>
-              </ul>
-            </div>
+      <div className="library-content">
+        {items === null ? (
+          <div className="text-center py-3">
+            <Spinner animation="border" size="sm" /> Loading…
           </div>
-        </aside>
-      </Col>
-    </>
+        ) : items.length === 0 ? (
+          <p className="text-center py-3">No entries</p>
+        ) : (
+          <ListGroup variant="flush" className="library-list">
+            {items.map((item) => (
+              <ListGroup.Item
+                key={item.key}
+                action
+                as={Link}
+                to={`/encounter/${category}/${item.key}`}
+                onClick={onClose}
+              >
+                {item.name}
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        )}
+      </div>
+    </aside>
   );
 }

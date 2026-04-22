@@ -1,19 +1,27 @@
-import { Container, Row } from "react-bootstrap";
+import { Container } from "react-bootstrap";
+import { ReactNode, useState } from "react";
 import Sidebar from "./ui/Sidebar";
 import Topbar from "./ui/Topbar";
 
-const MainLayout = ({ children }) => {
-  return (
-    <Container>
-      <Row>
-        <Topbar />
-      </Row>
-      <Row>
-        <Sidebar />
-        <div>{children}</div>
-      </Row>
-    </Container>
-  );
-};
+export default function MainLayout({ children }: { children: ReactNode }) {
+  const [libraryOpen, setLibraryOpen] = useState(false);
 
-export default MainLayout;
+  return (
+    <>
+      <Topbar
+        libraryOpen={libraryOpen}
+        onToggleLibrary={() => setLibraryOpen((o) => !o)}
+      />
+      <Sidebar
+        isOpen={libraryOpen}
+        onClose={() => setLibraryOpen(false)}
+      />
+      <Container
+        fluid
+        className={`main-content${libraryOpen ? " library-open" : ""}`}
+      >
+        {children}
+      </Container>
+    </>
+  );
+}
