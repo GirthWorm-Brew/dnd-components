@@ -25,16 +25,16 @@ export default function Topbar({ libraryOpen, onToggleLibrary }: TopbarProps) {
 			</div>
 			{/* nav-bar at the top of the page, using routes from routes.tsx */}
 			<nav className="nav-tabs">
-				<a href="Landing.html" className="tab">
+				<Link className="tab t-home" to="">
 					Home
-				</a>
-				<Link className="tab t-chars" to={"encounter/characters"}>
+				</Link>
+				<Link className="tab t-chars" to="encounter/characters">
 					Player Characters
 				</Link>
-				<Link className="tab t-board" to={"encounter/generate"}>
+				<Link className="tab t-board" to="encounter/generate">
 					Encounter Generator
 				</Link>
-				<Link className="tab t-combat" to={"encounter/track"}>
+				<Link className="tab t-combat" to="encounter/track">
 					Combat Tracker
 				</Link>
 			</nav>
