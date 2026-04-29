@@ -1,27 +1,9 @@
 import { useState, useEffect } from "react";
-import "./CharacterPage.css";
-import CharacterGetter from "./CharacterGetter";
+import "./Character.css";
+import CharacterGetter from "./CharacterListGetter";
 import CharacterCreator from "./CharacterCreator";
 import CharacterViewer from "./CharacterViewer";
-
-export interface Character {
-	charID: string;
-	name: string;
-	level: string;
-	characterClass: string;
-	background: string;
-	armorClass: string;
-	initiative: string;
-	speed: string;
-	maxHP: number;
-	currentHP: number;
-	strength: string;
-	dexterity: string;
-	constitution: string;
-	intelligence: string;
-	wisdom: string;
-	charisma: string;
-}
+import type { Character } from "./CharacterInterface";
 
 function CharacterPage() {
 	const [selectedCharID, setSelectedCharID] = useState<string | null>(null);
@@ -39,7 +21,7 @@ function CharacterPage() {
 	}, []);
 
 	return (
-		<main className="page-layout">
+		<main className="character-page">
 			<div className="character-selector">
 				<ul>
 					<CharacterGetter
@@ -57,7 +39,7 @@ function CharacterPage() {
 				{selectedCharID ? (
 					<CharacterViewer requestedCharacterID={selectedCharID} />
 				) : (
-					<CharacterCreator onCharacterCreated={loadCharacters} />
+					<CharacterCreator />
 				)}
 			</div>
 		</main>
