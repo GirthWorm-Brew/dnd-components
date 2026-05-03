@@ -1,18 +1,8 @@
 import "../../styles/Style.css";
 import { useEffect, useState } from "react";
-import {
-  DropdownButton,
-  DropdownItem,
-  ListGroup,
-  Spinner,
-} from "react-bootstrap";
+import { DropdownButton, DropdownItem, ListGroup, Spinner } from "react-bootstrap";
 import { Link } from "react-router";
-import {
-  categories,
-  getCategory,
-  warmAll,
-  type Category,
-} from "../../modules/open5e-cache";
+import { categories, getCategory, warmAll, type Category } from "../../modules/open5e-cache";
 
 interface ListableItem {
   key: string;
@@ -24,7 +14,7 @@ type SidebarProps = {
   onClose: () => void;
 };
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+export default function SidebarRight({ isOpen, onClose }: SidebarProps) {
   const [category, setCategory] = useState<Category>("creatures");
   const [items, setItems] = useState<ListableItem[] | null>(null);
 
@@ -41,26 +31,21 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       }
     }
     load();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [category]);
 
-  const currentLabel =
-    categories.find((c) => c.key === category)?.label ?? category;
+  const currentLabel = categories.find((c) => c.key === category)?.label ?? category;
 
   return (
-    <aside
-      id="sidebar-left"
-      className={`sidebar sidebar-left${isOpen ? " open" : ""}`}
+    <aside 
+      id="sidebar-right" 
+      className={`sidebar sidebar-right${isOpen ? " open" : ""}`} 
       aria-hidden={!isOpen}
     >
-      <DropdownButton
-        id="sidebar-dropdown-selection"
-        title={currentLabel}
-        onSelect={(key) => {
-          if (key) setCategory(key as Category);
-        }}
+      <DropdownButton 
+        id="sidebar-right-dropdown" 
+        title={currentLabel} 
+        onSelect={(key) => { if (key) setCategory(key as Category); }}
       >
         {categories.map(({ key, label }) => (
           <DropdownItem key={key} eventKey={key}>
@@ -79,11 +64,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         ) : (
           <ListGroup variant="flush" className="library-list">
             {items.map((item) => (
-              <ListGroup.Item
-                key={item.key}
-                action
-                as={Link}
-                to={`/encounter/${category}/${item.key}`}
+              <ListGroup.Item 
+                key={item.key} 
+                action 
+                as={Link} 
+                to={`/encounter/${category}/${item.key}`} 
                 onClick={onClose}
               >
                 {item.name}

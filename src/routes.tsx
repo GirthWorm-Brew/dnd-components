@@ -13,6 +13,7 @@ import {
 } from "./components/handbook";
 import EncounterTracker from "./components/encounterTracker/EncounterTracker";
 import EncounterGenDemo from "./components/encounterGen/EncounterGenDemo";
+import CharacterPage from "./components/playerCharacters/CharacterPage";
 
 export default function Router() {
   return (
@@ -33,7 +34,7 @@ export default function Router() {
         <Route path="subclasses/:stub" element={<Class />} />
         <Route path="track" element={<EncounterTracker />} />
         <Route path="generate" element={<EncounterGenDemo />} />
-        {/* <Route path="characters" element={<CharacterPage />} /> */}
+        <Route path="characters" element={<CharacterPage />} />
       </Route>
     </Routes>
   );
