@@ -2,8 +2,10 @@ import type { Server } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
 import { damageCombatant, getSnapshot } from "./encounter.service";
 
+// Each encounter ID maps to the set of live sockets watching that encounter.
 const rooms = new Map<string, Set<WebSocket>>();
 
+// Send a message to every open socket in one encounter room.
 function broadcast(encounterId: string, message: unknown) {
   const room = rooms.get(encounterId);
   if (!room) return;
@@ -14,6 +16,7 @@ function broadcast(encounterId: string, message: unknown) {
   }
 }
 
+// Register the live encounter endpoint on the existing HTTP server.
 export function attachEncounterWebSocket(server: Server) {
   const wss = new WebSocketServer({ server, path: "/api/encounters/live" });
 
@@ -21,6 +24,7 @@ export function attachEncounterWebSocket(server: Server) {
     const url = new URL(req.url ?? "", "http://localhost");
     const encounterId = url.searchParams.get("encounterId");
 
+    // A room cannot be selected without an encounter ID.
     if (!encounterId) {
       socket.close(1008, "Missing encounterId");
       return;
@@ -29,6 +33,7 @@ export function attachEncounterWebSocket(server: Server) {
     if (!rooms.has(encounterId)) rooms.set(encounterId, new Set());
     rooms.get(encounterId)!.add(socket);
 
+    // Send the current state immediately so the client can render before events.
     socket.send(
       JSON.stringify({
         type: "state.snapshot",
@@ -39,6 +44,7 @@ export function attachEncounterWebSocket(server: Server) {
     socket.on("message", (raw) => {
       const msg = JSON.parse(String(raw));
 
+      // Commands are versioned so stale clients do not overwrite newer state.
       if (msg.type === "command.damage") {
         const result = damageCombatant({
           encounterId,
@@ -55,6 +61,7 @@ export function attachEncounterWebSocket(server: Server) {
       }
     });
 
+    // Remove closed sockets from the room to avoid broadcasting to dead clients.
     socket.on("close", () => {
       rooms.get(encounterId)?.delete(socket);
     });

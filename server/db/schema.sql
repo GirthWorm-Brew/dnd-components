@@ -1,3 +1,5 @@
+-- One row per encounter session. Version is used for optimistic concurrency
+-- when clients send live combat commands.
 create table if not exists encounters (
   id text primary key,
   name text not null,
@@ -10,6 +12,8 @@ create table if not exists encounters (
     check (status in ('setup', 'running', 'paused', 'completed'))
 );
 
+-- Combatants are encounter-local copies of players, enemies, or NPCs.
+-- Initiative order is stored separately so ties can be sorted deterministically.
 create table if not exists encounter_combatants (
   id text primary key,
   encounter_id text not null,
@@ -28,6 +32,7 @@ create table if not exists encounter_combatants (
     check (kind in ('player', 'enemy', 'npc'))
 );
 
+-- Append-only event log for changes that should be broadcast or replayed.
 create table if not exists encounter_events (
   id text primary key,
   encounter_id text not null,

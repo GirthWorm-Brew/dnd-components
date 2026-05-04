@@ -3,6 +3,7 @@ import { sql } from "../db/sql";
 import { id } from "../utils/ids";
 import { nowIso } from "../utils/time";
 
+// Create the top-level encounter row. Combatants and events are added later.
 export function createEncounter(name: string) {
   const encounter = {
     id: id("enc"),
@@ -23,6 +24,7 @@ export function createEncounter(name: string) {
   return encounter;
 }
 
+// Fetch one encounter using API-facing camelCase aliases.
 export function getEncounter(id: string) {
   return db
     .prepare(
@@ -42,6 +44,7 @@ export function getEncounter(id: string) {
     .get(id);
 }
 
+// Return combatants in their current initiative order with JSON fields decoded.
 export function listCombatants(encounterID: string) {
   const rows = db
     .prepare(
@@ -72,6 +75,7 @@ export function listCombatants(encounterID: string) {
   }));
 }
 
+// Add a combatant to an existing encounter with default ordering and metadata.
 export function addCombatant(input: {
   encounterId: string;
   kind: string;

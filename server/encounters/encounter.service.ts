@@ -4,6 +4,7 @@ import { id } from "../utils/ids";
 import { nowIso } from "../utils/time";
 import * as repo from "./encounter.repo";
 
+// Build the state shape consumed by HTTP clients and WebSocket snapshots.
 export function getSnapshot(encounterId: string) {
   const encounter = repo.getEncounter(encounterId);
   if (!encounter) throw new Error("Encounter not found");
@@ -14,6 +15,7 @@ export function getSnapshot(encounterId: string) {
   };
 }
 
+// Apply damage atomically so HP, encounter version, and event log stay aligned.
 export const damageCombatant = db.transaction(
   (input: {
     encounterId: string;
@@ -25,6 +27,7 @@ export const damageCombatant = db.transaction(
     if (!encounter) throw new Error("Encounter not found");
 
     if (encounter.version !== input.expectedVersion) {
+      // Tell stale clients to refresh before issuing another command.
       return {
         type: "error.version_conflict",
         currentVersion: encounter.version,
@@ -46,6 +49,7 @@ export const damageCombatant = db.transaction(
     const nextHp = Math.max(0, combatant.currentHp - input.amount);
     const nextVersion = encounter.version + 1;
 
+    // Defeated state is derived from HP reaching zero.
     db.prepare(
       sql`update encounter_combatants set current_hp = ?, is_defeated = ? where id = ?`,
     ).run(nextHp, nextHp <= 0 ? 1 : 0, input.combatantId);
