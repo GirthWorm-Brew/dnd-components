@@ -26,6 +26,9 @@ const spec = swaggerJsdoc({
 // Serve swagger documentation
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(spec));
 
+// Serve generated AsyncAPI WebSocket documentation.
+app.use("/api/async-docs", express.static("dist/asyncapi"));
+
 // Encounters are the only mounted API module at the moment.
 app.use("/api/encounters", encounterRoutes);
 
@@ -37,4 +40,5 @@ attachEncounterWebSocket(server);
 server.listen(3001, () => {
   console.log("API listening on http://localhost:3001");
   console.log("Swagger docs available: http://localhost:3001/api/docs");
+  console.log("AsyncAPI docs available: http://localhost:3001/api/async-docs");
 });

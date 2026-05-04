@@ -9,8 +9,9 @@ Backend module for creating encounters, adding combatants, reading snapshots, an
 - `encounter.service.ts` contains snapshot and transactional combat logic.
 - `encounter.websocket.ts` attaches the live WebSocket endpoint.
 - `encounter.types.ts` defines encounter, combatant, and snapshot types.
-- `encounter.commands.ts` is reserved for command contracts and is currently empty.
-- `encounter.events.ts` is reserved for event contracts and is currently empty.
+- `encounter.commands.ts` defines client-to-server WebSocket command types.
+- `encounter.events.ts` defines server-to-client WebSocket message and event types.
+- `asyncapi.yaml` documents the WebSocket contract.
 
 ## HTTP API
 
@@ -80,6 +81,8 @@ To damage a combatant, send:
 ```
 
 Successful commands broadcast an `event.combatants.hp_changed` event to all sockets in the encounter room. If the supplied `expectedVersion` is stale, the sender receives `error.version_conflict`.
+
+The full WebSocket message contract is documented in `asyncapi.yaml`.
 
 ## Development Notes
 

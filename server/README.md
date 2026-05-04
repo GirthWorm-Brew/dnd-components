@@ -18,7 +18,7 @@ The server listens on `http://localhost:3001`.
 
 Only the encounters API is mounted today:
 
-- `POST /api/encounters` creates an encounter. Body may include `name`.
+- `POST /api/encounters` creates an encounter. Body may include `name`; `id`, `status`, `roundNumber`, `activeTurnIndex`, `version`, and `createdAt` are assigned by the server.
 - `GET /api/encounters/:encounterId/state` returns the encounter snapshot.
 - `POST /api/encounters/:encounterId/combatants` adds a combatant.
 - `WS /api/encounters/live?encounterId=<id>` joins the live encounter room.

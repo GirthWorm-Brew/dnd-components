@@ -1,12 +1,14 @@
 import type { Server } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
 import { damageCombatant, getSnapshot } from "./encounter.service";
+import type { EncounterCommand } from "./encounter.commands";
+import type { EncounterEvent } from "./encounter.events";
 
 // Each encounter ID maps to the set of live sockets watching that encounter.
 const rooms = new Map<string, Set<WebSocket>>();
 
 // Send a message to every open socket in one encounter room.
-function broadcast(encounterId: string, message: unknown) {
+function broadcast(encounterId: string, message: EncounterEvent) {
   const room = rooms.get(encounterId);
   if (!room) return;
 
@@ -42,7 +44,7 @@ export function attachEncounterWebSocket(server: Server) {
     );
 
     socket.on("message", (raw) => {
-      const msg = JSON.parse(String(raw));
+      const msg = JSON.parse(String(raw)) as EncounterCommand;
 
       // Commands are versioned so stale clients do not overwrite newer state.
       if (msg.type === "command.damage") {

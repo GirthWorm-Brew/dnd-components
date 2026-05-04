@@ -16,8 +16,8 @@ export function createEncounter(name: string) {
   db.prepare(
     sql`
     insert into encounters
-    (id, name, status, round_number, active_turn_index, version, created_at)
-    valuse (@id, @name, @status, @roundNumber, @activeTurnIndex, @version, @createdAt)
+    (id, name, status, created_at)
+    values (@id, @name, @status, @createdAt)
 `,
   ).run(encounter);
 
