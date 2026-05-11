@@ -8,7 +8,6 @@ type RightBarProps = {
   onSelectEncounter?: (encounterId: string) => void;
   onClose: () => void;
   encounterList: Encounter[];
-  refreshEncounters: () => Promise<void>;
 };
 
 // all of this page is just one mega stub
@@ -16,16 +15,11 @@ export default function SidebarRight({
   isOpen,
   onSelectEncounter,
   encounterList,
-  refreshEncounters,
 }: RightBarProps) {
   const [encounter, setEncounter] = useState<Encounter | null>(null);
   const [selectedEncounter, setSelectedEncounter] = useState<string | null>(
     null
   );
-
-  useEffect(() => {
-    refreshEncounters();
-  }, [refreshEncounters]);
 
   return (
     <aside

@@ -4,6 +4,6 @@ import CharacterPage from "./CharacterPage";
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
-		<CharacterPage></CharacterPage>
+		<CharacterPage encounterList={[]} refreshEncounters={async () => {}} />
 	</StrictMode>,
 );

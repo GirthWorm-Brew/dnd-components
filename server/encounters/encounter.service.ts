@@ -270,19 +270,7 @@ export const attackCombatant = db.transaction(
       attackBonus: attacker.attackBonus,
       armorClass,
     });
-    const damage = attack.hit ? Math.max(1, attacker.attackBonus ?? 1) : 0;
-    const currentHp = Math.max(0, target.currentHp - damage);
     const nextVersion = encounter.version + 1;
-
-    if (attack.hit) {
-      db.prepare(
-        sql`
-          update encounter_combatants
-          set current_hp = ?, is_defeated = ?
-          where id = ? and encounter_id = ?
-        `
-      ).run(currentHp, currentHp <= 0 ? 1 : 0, target.id, input.encounterId);
-    }
 
     db.prepare(sql`update encounters set version = ? where id = ?`).run(
       nextVersion,
@@ -301,9 +289,9 @@ export const attackCombatant = db.transaction(
         attackTotal: attack.attackTotal,
         armorClass,
         hit: attack.hit,
-        damage,
+        damage: 0,
         previousHp: target.currentHp,
-        currentHp,
+        currentHp: target.currentHp,
       },
       createdAt: nowIso(),
     };

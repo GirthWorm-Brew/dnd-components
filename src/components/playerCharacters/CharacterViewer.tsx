@@ -1,13 +1,28 @@
 import { useState, useEffect } from "react";
+import { Button, Dropdown, DropdownItem, Form, Modal, Row } from "react-bootstrap";
 import type { Character } from "./CharacterInterface";
 import { getCharacter } from "../../modules/character-api/index";
+import {
+	addCombatant,
+	addEncounter,
+	type AddCombatantRequest,
+	type Encounter,
+} from "../../modules/encounter-api";
 
 interface CharacterViewerProps {
 	requestedCharacterID: string;
+	encounterList: Encounter[];
+	refreshEncounters: () => Promise<void>;
 }
 
-function CharacterViewer({ requestedCharacterID }: CharacterViewerProps) {
+function CharacterViewer({
+	requestedCharacterID,
+	encounterList,
+	refreshEncounters,
+}: CharacterViewerProps) {
 	const [char, setChar] = useState<Character>();
+	const [show, setShow] = useState<boolean>(false);
+	const [encounterName, setEncounterName] = useState<string>("");
 
 	const loadCharacter = async (charID: string) => {
 		setChar(await getCharacter(charID));
@@ -30,20 +45,97 @@ function CharacterViewer({ requestedCharacterID }: CharacterViewerProps) {
 
 
 	// If the character isn't found, return an error message
-	if (!char) {
-		return <div>Character not found.</div>;
-	}
+		if (!char) {
+			return <div>Character not found.</div>;
+		}
+		const currentChar = char;
 
 	// Returns modifier for attribute values
-	const getModifier = (val: number) => {
-		if (!val) return "+0";
-		const mod = Math.floor((Number(val) - 10) / 2);
-		return mod >= 0 ? `+${mod}` : `${mod}`;
-	};
+		const getModifier = (val: number) => {
+			if (!val) return "+0";
+			const mod = Math.floor((Number(val) - 10) / 2);
+			return mod >= 0 ? `+${mod}` : `${mod}`;
+		};
 
-	return (
-		<div className="flex-down">
-			<div className="character-info-container">
+		const characterToCombatantRequest = (
+			character: Character
+		): AddCombatantRequest => ({
+			kind: "player",
+			displayName: character.name,
+			initiative: character.initiative,
+			currentHp: character.currentHP,
+			maxHp: character.maxHP,
+			armorClass: character.armorClass,
+			attackBonus: 0,
+		});
+
+		const handleClose = () => setShow(false);
+		const handleShow = () => setShow(true);
+
+		async function handleAddToEncounter(encounterId: string) {
+			await addCombatant(characterToCombatantRequest(currentChar), encounterId);
+		}
+
+		async function createEncounterAddCharacter(encounterName: string) {
+			const encounter = await addEncounter({ name: encounterName });
+			const encounterId = encounter.id;
+
+			await refreshEncounters();
+			await handleAddToEncounter(encounterId);
+		}
+
+		return (
+			<div className="flex-down character-viewer-content">
+				<div className="character-viewer-actions">
+					<Dropdown>
+						<Dropdown.Toggle variant="secondary" id="add-character-to-encounter">
+							Add to Encounter
+						</Dropdown.Toggle>
+						<Dropdown.Menu>
+							{encounterList?.map((encounter) => (
+								<DropdownItem
+									key={encounter.id}
+									onClick={() => handleAddToEncounter(encounter.id)}
+								>
+									{encounter.name}
+								</DropdownItem>
+							))}
+							<DropdownItem onClick={handleShow}>New Encounter</DropdownItem>
+						</Dropdown.Menu>
+						<Modal show={show} onHide={handleClose} centered>
+							<Modal.Header closeButton>
+								<Modal.Title>New Encounter</Modal.Title>
+							</Modal.Header>
+							<Modal.Body>
+								<Form
+									onSubmit={async (e) => {
+										e.preventDefault();
+										await createEncounterAddCharacter(encounterName);
+										handleClose();
+									}}
+								>
+									<Row>
+										<Form.Group
+											className="mb-3"
+											controlId="newCharacterEncounterForm.ControlInput1"
+										>
+											<Form.Label>Encounter Name</Form.Label>
+											<Form.Control
+												type="text"
+												value={encounterName}
+												onChange={(e) => setEncounterName(e.target.value)}
+												placeholder="Dark Forest"
+												autoFocus
+											/>
+										</Form.Group>
+										<Button type="submit">Submit</Button>
+									</Row>
+								</Form>
+							</Modal.Body>
+						</Modal>
+					</Dropdown>
+				</div>
+				<div className="character-info-container">
 				{/* <img src="src/gandalf.png" alt="" /> */}
 				<div className="character-info">
 					<div className="name-container">
@@ -54,9 +146,9 @@ function CharacterViewer({ requestedCharacterID }: CharacterViewerProps) {
 						<p>Class: {char.characterClass}</p>
 						<p>Background: {char.background}</p>
 					</div>
+					</div>
 				</div>
-			</div>
-			<div className="stat-row">
+				<div className="stat-row">
 				<div className="stat-box">
 					<label htmlFor="AC">Armor Class</label>
 					<p id="AC">

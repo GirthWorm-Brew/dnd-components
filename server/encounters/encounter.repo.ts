@@ -141,3 +141,11 @@ export function addCombatant(input: {
     isDefeated: Boolean(combatant.isDefeated),
   };
 }
+
+export function removeCombatant(combatantId: string, encounterId: string) {
+  db.prepare(
+    sql`delete from encounter_combatants
+    where id = ? and encounter_id = ?
+  `
+  ).run(combatantId, encounterId);
+}

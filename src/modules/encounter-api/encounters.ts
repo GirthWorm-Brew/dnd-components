@@ -31,5 +31,15 @@ const addCombatant = async (
   return res;
 };
 
-export { addEncounter, listEncounters, getEncounterSnapshot, addCombatant };
+const deleteCombatant = async (encounterId: string, combatantId: string) => {
+  const res = await api.delete(`${encounterId}/combatants/${combatantId}`);
+  return res;
+};
 
+export {
+  addEncounter,
+  listEncounters,
+  getEncounterSnapshot,
+  addCombatant,
+  deleteCombatant,
+};

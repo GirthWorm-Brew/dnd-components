@@ -3,7 +3,7 @@ import "../../styles/Tracker.css";
 import { Button, ButtonGroup, ListGroup, Row } from "react-bootstrap";
 import CombatantCard from "./CombatantCard";
 import { useState } from "react";
-import { Combatant } from "../../modules/encounter-api";
+import { Combatant, deleteCombatant } from "../../modules/encounter-api";
 
 type EncounterProps = {
   encounterId: string;
@@ -36,6 +36,10 @@ export default function EncounterSidebar({ encounterId }: EncounterProps) {
     setAttackMode(false);
   };
 
+  const handleDeleteCombatant = async (combatantId: string) => {
+    await deleteCombatant(encounterId, combatantId);
+  };
+
   return (
     <>
       <div className="encounter">
@@ -59,6 +63,7 @@ export default function EncounterSidebar({ encounterId }: EncounterProps) {
                   combatant={combatant}
                   isActive={isActive}
                   isTargetable={isTargetable}
+                  onDelete={() => handleDeleteCombatant(combatant.id)}
                 />
               </ListGroup.Item>
             );

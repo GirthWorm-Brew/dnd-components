@@ -217,5 +217,5 @@ characterRoutes.get("/", (_req, res) => {
 // Not implemented in webapp
 characterRoutes.delete("/:characterId", (req, res) => {
   repo.deleteCharacter(req.params.characterId);
-  res.status(204)
+  res.status(204).send();
 })

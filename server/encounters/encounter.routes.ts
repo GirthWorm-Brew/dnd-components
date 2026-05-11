@@ -281,3 +281,9 @@ encounterRoutes.post("/:encounterId/combatants", (req, res) => {
 
   res.status(201).json(combatant);
 });
+
+encounterRoutes.delete("/:encounterId/combatants/:combatantId", (req, res) => {
+  repo.removeCombatant(req.params.combatantId, req.params.encounterId);
+  broadcastEncounterSnapshot(req.params.encounterId);
+  res.status(204).send();
+});

@@ -53,7 +53,15 @@ export default function Router({
             />
           }
         />
-        <Route path="characters" element={<CharacterPage />} />
+        <Route
+          path="characters"
+          element={
+            <CharacterPage
+              refreshEncounters={refreshEncounters}
+              encounterList={encounterList}
+            />
+          }
+        />
       </Route>
     </Routes>
   );
