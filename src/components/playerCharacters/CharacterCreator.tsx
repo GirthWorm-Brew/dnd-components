@@ -21,7 +21,11 @@ const ATTRIBUTE_FIELDS = [
 
 /* maybe cast char as Character later or change default fields if addCharacter breaks the hoover dam */
 
-function CharacterCreator() {
+type CharacterCreatorProps = {
+	onCreateCharacter: () => Promise<void>;
+};
+
+function CharacterCreator({ onCreateCharacter }: CharacterCreatorProps) {
 	const [char, setChar] = useState({ 
 		name: "",
 		level: "",
@@ -74,12 +78,13 @@ function CharacterCreator() {
 			charID: crypto.randomUUID(),
 			currentHP: char.maxHP,
 		};
-		const result = await addCharacter(((newCharacter as unknown) as Character));
-		if (result == 201) {
-			console.log("Created character:", newCharacter);
-		} else if (result == 400) {
-			console.error("Data was bad?", newCharacter);
-		} else {
+			const result = await addCharacter(((newCharacter as unknown) as Character));
+			if (result == 201) {
+				console.log("Created character:", newCharacter);
+				await onCreateCharacter();
+			} else if (result == 400) {
+				console.error("Data was bad?", newCharacter);
+			} else {
 			console.error("Yeah I don't know what happened here, but:", newCharacter);
 		}
 		// const existing = JSON.parse(localStorage.getItem("characters") || "[]");

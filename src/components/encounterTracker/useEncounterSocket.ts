@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { EncounterSnapshot } from "../../modules/encounter-api/types.gen";
+import { EncounterSnapshot } from "../../modules/encounter-api";
 
 export function useEncounterSocket(encounterId: string) {
   const socketRef = useRef<WebSocket | null>(null);
@@ -83,29 +83,27 @@ export function useEncounterSocket(encounterId: string) {
         setVersion(msg.version);
         setLastAttack(
           msg.payload.hit
-            ? `Hit ${msg.payload.attackTotal} vs AC ${msg.payload.armorClass} for ${msg.payload.damage} damage`
+            ? `Hit ${msg.payload.attackTotal} vs AC ${msg.payload.armorClass}`
             : `Miss ${msg.payload.attackTotal} vs AC ${msg.payload.armorClass}`
         );
-        setSnapshot((prev) => {
-          if (!prev) return prev;
 
-          return {
-            ...prev,
-            combatants: prev.combatants.map((combatant) =>
-              combatant.id === msg.payload.targetId
-                ? {
-                    ...combatant,
-                    currentHp: msg.payload.currentHp,
-                    isDefeated: msg.payload.currentHp <= 0,
-                  }
-                : combatant
-            ),
-            encounter: {
-              ...prev.encounter,
-              version: msg.version,
-            },
-          };
-        });
+        if (msg.payload.hit) {
+          const amount = window.prompt("Enter damage");
+          const damageAmount = Number(amount);
+
+          if (amount && Number.isFinite(damageAmount) && damageAmount > 0) {
+            socketRef.current?.send(
+              JSON.stringify({
+                type: "command.damage",
+                expectedVersion: msg.version,
+                payload: {
+                  combatantId: msg.payload.targetId,
+                  amount: damageAmount,
+                },
+              })
+            );
+          }
+        }
       }
 
       if (msg.type === "event.encounter.ended") {

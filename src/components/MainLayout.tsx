@@ -29,7 +29,6 @@ export default function MainLayout({
       />
       <LeftSidebar isOpen={libraryOpen} onClose={() => setLibraryOpen(false)} />
       <SidebarRight
-        refreshEncounters={refreshEncounters}
         encounterList={encounterList}
         isOpen={catalogueOpen}
         onClose={() => setCatalogueOpen(false)}

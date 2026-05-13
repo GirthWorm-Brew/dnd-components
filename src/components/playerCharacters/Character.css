@@ -90,7 +90,8 @@ p {
 /* Page Layout */
 .character-page {
 	display: grid;
-	height: 90vh;
+	min-height: 90vh;
+	height: auto;
 	width: 90vw;
 	grid-template-columns: max-content 1fr;
 	background-color: hsl(var(--clr-background));
@@ -124,10 +125,14 @@ p {
 	min-width: 12rem;
 }
 
-.character-selector ul li {
-	padding-block: 1rem;
-	margin-inline: 1rem;
-	background-color: hsl(var(--clr-lighter-green));
+	.character-selector ul li {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		padding-block: 1rem;
+		margin-inline: 1rem;
+		background-color: hsl(var(--clr-lighter-green));
 	border-radius: 0.25rem;
 	transition: cubic-bezier(0.075, 0.82, 0.165, 1) background-color 0.5s;
 }
@@ -137,9 +142,17 @@ p {
 	background-color: hsl(var(--clr-blue));
 }
 
-.character-selector ul li#selected {
-	background-color: hsl(var(--clr-blue));
-}
+	.character-selector ul li#selected {
+		background-color: hsl(var(--clr-blue));
+	}
+
+	.character-selector ul li button {
+		border: none;
+		border-radius: 0.25rem;
+		background-color: hsl(var(--clr-darker-green));
+		padding: 0.25rem 0.5rem;
+		cursor: pointer;
+	}
 
 button#createCharacterTab {
 	font-family: inherit;
@@ -163,6 +176,15 @@ button#createCharacterTab:hover {
 	width: 75%;
 	margin-inline: auto;
 	margin-block: 3rem;
+}
+
+.character-viewer-content {
+	position: relative;
+}
+
+.character-viewer-actions {
+	display: flex;
+	justify-content: flex-end;
 }
 
 /* CHARACTER CREATOR CSS */

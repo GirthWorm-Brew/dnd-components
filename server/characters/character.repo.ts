@@ -65,7 +65,7 @@ function addCharacter(input: {
         charisma
       )
       values
-      (@id, @charID, @name, @level, @characterClass, @background, @armorClass, @initiative, @speed, @maxHP, @currentHP, @strength, @dexterity, @constitution, @intelligence, @wisdom, @charisma)
+      (@id, @charID, @name, @level, @characterClass, @background, @armorClass, @initiative, @speed, @currentHP, @maxHP, @strength, @dexterity, @constitution, @intelligence, @wisdom, @charisma)
         `
   ).run(character);
 
@@ -136,7 +136,7 @@ function deleteCharacter(id: string) {
     sql`
       DELETE FROM characters WHERE character_id = ?
     `
-  );
+  ).run(id);
 }
 
 export { addCharacter, getCharacter, listCharacters, deleteCharacter };

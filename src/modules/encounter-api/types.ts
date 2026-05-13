@@ -13,13 +13,7 @@ interface CreateEncounterRequest {
 }
 
 interface EncounterSnapshot {
-  id: string;
-  name: string;
-  status: "setup" | "running" | "paused" | "completed";
-  roundNumber: number;
-  activeTurnIndex: number;
-  version: number;
-  createdAt: string;
+  encounter: Encounter;
   combatants: Combatant[];
 }
 
@@ -55,4 +49,3 @@ export type {
   Combatant,
   AddCombatantRequest,
 };
-
