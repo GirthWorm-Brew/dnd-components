@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { EncounterSnapshot } from "../../modules/encounter-api";
 
+function getEncounterSocketUrl(encounterId: string) {
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  const params = new URLSearchParams({ encounterId });
+
+  return `${protocol}//${window.location.host}/api/encounters/live?${params}`;
+}
+
 export function useEncounterSocket(encounterId: string) {
   const socketRef = useRef<WebSocket | null>(null);
   const [snapshot, setSnapshot] = useState<EncounterSnapshot | null>(null);
@@ -8,9 +15,7 @@ export function useEncounterSocket(encounterId: string) {
   const [lastAttack, setLastAttack] = useState<string | null>(null);
 
   useEffect(() => {
-    const socket = new WebSocket(
-      `ws://localhost:3001/api/encounters/live?encounterId=${encounterId}`
-    );
+    const socket = new WebSocket(getEncounterSocketUrl(encounterId));
 
     socketRef.current = socket;
 

@@ -1,6 +1,7 @@
 :8080 {
 	root * /srv
 	encode zstd gzip
+	reverse_proxy /api/* backend:3001
 	try_files {path} /index.html
 	file_server
 }
