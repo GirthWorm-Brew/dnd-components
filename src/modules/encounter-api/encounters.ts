@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { CreateEncounterRequest, AddCombatantRequest } from "./types";
 
-export const BASE_URL = "http://localhost:3001/api/encounters";
+export const BASE_URL = "/api/encounters";
 
 const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,

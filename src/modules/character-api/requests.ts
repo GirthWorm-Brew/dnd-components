@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Character } from "./types";
 
-export const BASE_URL = "http://localhost:3001/api/characters"
+export const BASE_URL = "/api/characters";
 
 async function addCharacter(newCharacter: Character) {
     const response = await axios.post(`${BASE_URL}/`, newCharacter);
